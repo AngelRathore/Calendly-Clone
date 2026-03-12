@@ -100,7 +100,7 @@ uvicorn main:app --reload
 Backend runs on:
 
 ```
-http://127.0.0.1:8000
+http://https://calendly-clone-z04a.onrender.com
 ```
 
 ---

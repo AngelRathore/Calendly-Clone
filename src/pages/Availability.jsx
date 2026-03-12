@@ -9,7 +9,7 @@ function Availability() {
   const [message, setMessage] = useState("")
 
   async function loadAvailability() {
-    const res = await fetch("http://127.0.0.1:8000/availability/")
+    const res = await fetch("https://calendly-clone-z04a.onrender.com/availability/")
     const data = await res.json()
     setAvailability(data)
   }
@@ -20,7 +20,7 @@ function Availability() {
 
   async function handleAdd() {
 
-    const res = await fetch("http://127.0.0.1:8000/availability/", {
+    const res = await fetch("https://calendly-clone-z04a.onrender.com/availability/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -45,7 +45,7 @@ function Availability() {
   }
 
   async function handleDelete(id) {
-    await fetch(`http://127.0.0.1:8000/availability/${id}`, {
+    await fetch(`https://calendly-clone-z04a.onrender.com/availability/${id}`, {
       method: "DELETE"
     })
 

@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8000"
+const API = "https://calendly-clone-z04a.onrender.com"
 
 /* ---------------- EVENTS ---------------- */
 
