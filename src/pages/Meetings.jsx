@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { getMeetings } from "../api/api"
 
-const API = "http://127.0.0.1:8000"
+const API = "https://calendly-clone-z04a.onrender.com"
 
 function Meetings() {
 
