@@ -8,7 +8,7 @@ from routers import slots
 from routers import bookings
 from routers import meetings
 
-app = FastAPI()
+app = FastAPI(redirect_slashes=False)
 
 app.add_middleware(
     CORSMiddleware,
