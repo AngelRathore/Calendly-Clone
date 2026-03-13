@@ -6,6 +6,15 @@ Users can create meeting event types, define their availability, and allow other
 This project replicates the core scheduling workflow used in modern meeting platforms.
 
 ---
+## Live Demo
+Note: The backend is deployed on Render's free tier and may take 40–50 seconds to wake up after a period of inactivity. Please allow a moment for the server to start if the site initially appears unresponsive.
+
+Frontend:  
+https://calendly-frontend.onrender.com
+
+Backend API (Swagger Docs):  
+https://calendly-clone-1.onrender.com/docs
+
 
 ## Features
 
