@@ -3,12 +3,12 @@ const API = "https://calendly-clone-1.onrender.com"
 /* ---------------- EVENTS ---------------- */
 
 export async function getEvents() {
-  const res = await fetch(`${API}/events`)
+  const res = await fetch(`${API}/events/`)
   return await res.json()
 }
 
 export async function createEvent(name, duration, slug) {
-  const res = await fetch(`${API}/events`, {
+  const res = await fetch(`${API}/events/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -35,7 +35,7 @@ export async function deleteEvent(id) {
 /* ---------------- SLOTS ---------------- */
 
 export async function getSlots(eventId) {
-  const res = await fetch(`${API}/slots?event_id=${eventId}`)
+  const res = await fetch(`${API}/slots?/event_id=${eventId}`)
   return await res.json()
 }
 
@@ -44,7 +44,7 @@ export async function getSlots(eventId) {
 
 export async function bookMeeting(eventId, name, email, date, time) {
 
-  const res = await fetch(`${API}/book`, {
+  const res = await fetch(`${API}/book/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -65,7 +65,7 @@ export async function bookMeeting(eventId, name, email, date, time) {
 /* ---------------- MEETINGS ---------------- */
 
 export async function getMeetings() {
-  const res = await fetch(`${API}/meetings`)
+  const res = await fetch(`${API}/meetings/`)
   return await res.json()
 }
 
