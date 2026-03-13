@@ -1,4 +1,4 @@
-const API = "https://calendly-clone-z04a.onrender.com"
+const API = "https://calendly-clone-1.onrender.com"
 
 /* ---------------- EVENTS ---------------- */
 
