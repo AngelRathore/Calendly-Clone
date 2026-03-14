@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
+
 const API = "https://calendly-clone-1.onrender.com"
+
 function Availability() {
 
   const [day, setDay] = useState("")
@@ -9,9 +11,13 @@ function Availability() {
   const [message, setMessage] = useState("")
 
   async function loadAvailability() {
-    const res = await fetch(`${API}/availability/`)
-    const data = await res.json()
-    setAvailability(data)
+    try {
+      const res = await fetch(`${API}/availability/`)
+      const data = await res.json()
+      setAvailability(data)
+    } catch (err) {
+      console.error("Failed to load availability")
+    }
   }
 
   useEffect(() => {
@@ -19,37 +25,58 @@ function Availability() {
   }, [])
 
   async function handleAdd() {
-
-    const res = await fetch(`${API}/availability/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        day_of_week: day,
-        start_time: start,
-        end_time: end
+    try {
+      const res = await fetch(`${API}/availability/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          day_of_week: day,
+          start_time: start,
+          end_time: end
+        })
       })
-    })
 
-    const data = await res.json()
+      const data = await res.json()
 
-    setMessage(data.message)
+      setMessage(data.message)
 
-    if (data.message === "Availability added") {
-      setDay("")
-      setStart("")
-      setEnd("")
-      loadAvailability()
+      if (data.message === "Availability added") {
+
+        // instantly update UI
+        setAvailability([
+          ...availability,
+          {
+            id: Date.now(),
+            day_of_week: day,
+            start_time: start,
+            end_time: end
+          }
+        ])
+
+        setDay("")
+        setStart("")
+        setEnd("")
+      }
+
+    } catch (err) {
+      console.error("Failed to add availability")
     }
   }
 
   async function handleDelete(id) {
-    await fetch(`${API}/availability/${id}`, {
-      method: "DELETE"
-    })
+    try {
+      await fetch(`${API}/availability/${id}`, {
+        method: "DELETE"
+      })
 
-    loadAvailability()
+      // update UI immediately
+      setAvailability(availability.filter(a => a.id !== id))
+
+    } catch (err) {
+      console.error("Failed to delete availability")
+    }
   }
 
   return (
