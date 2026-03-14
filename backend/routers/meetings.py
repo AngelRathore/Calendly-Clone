@@ -15,78 +15,60 @@ class MeetingCreate(BaseModel):
     start_time: time
 
 
-@router.post("/")
-def create_meeting(data: MeetingCreate):
-
-    db: Session = SessionLocal()
-
-    # prevent double booking
-    existing = db.query(Meeting).filter(
-        Meeting.date == data.date,
-        Meeting.start_time == data.start_time
-    ).first()
-
-    if existing:
-        db.close()
-        return {"message": "This time slot is already booked"}
-
-    meeting = Meeting(
-        invitee_name=data.invitee_name,
-        invitee_email=data.invitee_email,
-        date=data.date,
-        start_time=data.start_time
-    )
-
-    db.add(meeting)
-    db.commit()
-    db.close()
-
-    return {"message": "Meeting booked successfully"}
-
-
 @router.get("/")
 def get_meetings():
-
     db: Session = SessionLocal()
+    try:
 
-    meetings = db.query(Meeting).order_by(
-        Meeting.date, Meeting.start_time
-    ).all()
+        meetings = db.query(Meeting).order_by(
+            Meeting.date, Meeting.start_time
+        ).all()
 
-    upcoming = []
-    past = []
+        upcoming = []
+        past = []
 
-    today = date.today()
+        today = date.today()
 
-    for meeting in meetings:
-        if meeting.date >= today:
-            upcoming.append(meeting)
-        else:
-            past.append(meeting)
+        for m in meetings:
+            meeting_data = {
+                "id": m.id,
+                "invitee_name": m.invitee_name,
+                "invitee_email": m.invitee_email,
+                "date": str(m.date),
+                "start_time": str(m.start_time),
+                "status": m.status
+            }
 
-    db.close()
+            if m.date >= today:
+                upcoming.append(meeting_data)
+            else:
+                past.append(meeting_data)
 
-    return {
-        "upcoming": upcoming,
-        "past": past
-    }
+        return {
+            "upcoming": upcoming,
+            "past": past
+        }
+
+    finally:
+        db.close()
 
 
 @router.delete("/{meeting_id}")
 def cancel_meeting(meeting_id: int):
-
     db: Session = SessionLocal()
+    try:
 
-    meeting = db.query(Meeting).filter(
-        Meeting.id == meeting_id
-    ).first()
+        meeting = db.query(Meeting).filter(
+            Meeting.id == meeting_id
+        ).first()
 
-    if not meeting:
+        if not meeting:
+            return {"error": "Meeting not found"}
+
+        db.delete(meeting)
+        db.commit()
+
+        return {"message": "Meeting cancelled"}
+
+    finally:
         db.close()
-        return {"error": "Meeting not found"}
-
-    db.delete(meeting)
-    db.commit()
-    db.close()
-
-    return {"message": "Meeting cancelled"}

@@ -12,40 +12,47 @@ def get_slots(event_id: int):
 
     db: Session = SessionLocal()
 
-    event = db.query(EventType).filter(
-        EventType.id == event_id
-    ).first()
+    try:
+        event = db.query(EventType).filter(
+            EventType.id == event_id
+        ).first()
 
-    availability = db.query(Availability).first()
+        if not event:
+            return {"error": "Event not found"}
 
-    # generate time slots
-    slots = generate_slots(
-        availability.start_time,
-        availability.end_time,
-        event.duration
-    )
+        availability = db.query(Availability).first()
 
-    # fetch booked meetings for this event
-    booked_meetings = db.query(Meeting).filter(
-        Meeting.event_type_id == event_id
-    ).all()
+        if not availability:
+            return {"error": "Availability not set"}
 
-    booked_times = [str(m.start_time) for m in booked_meetings]
+        # generate time slots
+        slots = generate_slots(
+            availability.start_time,
+            availability.end_time,
+            event.duration
+        )
 
-    # attach booked flag to each slot
-    slot_data = []
+        # fetch booked meetings
+        booked_meetings = db.query(Meeting).filter(
+            Meeting.event_type_id == event_id
+        ).all()
 
-    for slot in slots:
-        slot_str = str(slot)
+        booked_times = [str(m.start_time) for m in booked_meetings]
 
-        slot_data.append({
-            "time": slot_str,
-            "booked": slot_str in booked_times
-        })
+        slot_data = []
 
-    db.close()
+        for slot in slots:
+            slot_str = str(slot)
 
-    return {
-        "event": event.name,
-        "slots": slot_data
-    }
+            slot_data.append({
+                "time": slot_str,
+                "booked": slot_str in booked_times
+            })
+
+        return {
+            "event": event.name,
+            "slots": slot_data
+        }
+
+    finally:
+        db.close()

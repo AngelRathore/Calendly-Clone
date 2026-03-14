@@ -14,66 +14,75 @@ class AvailabilityCreate(BaseModel):
     end_time: time
 
 
-
-
 @router.post("/")
 def create_availability(data: AvailabilityCreate):
-
     db: Session = SessionLocal()
+    try:
 
-    # check invalid time range
-    if data.start_time >= data.end_time:
-        return {"message": "End time must be after start time"}
+        if data.start_time >= data.end_time:
+            return {"message": "End time must be after start time"}
 
-    # check overlapping availability
-    overlap = db.query(Availability).filter(
-        Availability.day_of_week == data.day_of_week,
-        Availability.start_time < data.end_time,
-        Availability.end_time > data.start_time
-    ).first()
+        overlap = db.query(Availability).filter(
+            Availability.day_of_week == data.day_of_week,
+            Availability.start_time < data.end_time,
+            Availability.end_time > data.start_time
+        ).first()
 
-    if overlap:
-        return {"message": "Availability overlaps with existing time"}
+        if overlap:
+            return {"message": "Availability overlaps with existing time"}
 
-    availability = Availability(
-        day_of_week=data.day_of_week,
-        start_time=data.start_time,
-        end_time=data.end_time
-    )
+        availability = Availability(
+            day_of_week=data.day_of_week,
+            start_time=data.start_time,
+            end_time=data.end_time
+        )
 
-    db.add(availability)
-    db.commit()
+        db.add(availability)
+        db.commit()
+        db.refresh(availability)
 
-    return {"message": "Availability added"}
+        return {
+            "id": availability.id,
+            "day_of_week": availability.day_of_week,
+            "start_time": str(availability.start_time),
+            "end_time": str(availability.end_time)
+        }
+
+    finally:
+        db.close()
 
 
 @router.get("/")
 def get_availability():
-
     db: Session = SessionLocal()
+    try:
+        availability = db.query(Availability).all()
 
-    availability = db.query(Availability).all()
+        return [
+            {
+                "id": a.id,
+                "day_of_week": a.day_of_week,
+                "start_time": str(a.start_time),
+                "end_time": str(a.end_time)
+            }
+            for a in availability
+        ]
 
-    return [
-        {
-            "id": a.id,
-            "day_of_week": a.day_of_week,
-            "start_time": str(a.start_time),
-            "end_time": str(a.end_time)
-        }
-        for a in availability
-    ]
-    
-    
+    finally:
+        db.close()
+
+
 @router.delete("/{id}")
 def delete_availability(id: int):
-
     db: Session = SessionLocal()
+    try:
+        availability = db.query(Availability).filter(Availability.id == id).first()
 
-    availability = db.query(Availability).filter(Availability.id == id).first()
+        if availability:
+            db.delete(availability)
+            db.commit()
 
-    if availability:
-        db.delete(availability)
-        db.commit()
+        return {"message": "Availability deleted"}
 
-    return {"message": "Availability deleted"}
+    finally:
+        db.close()
