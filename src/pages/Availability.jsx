@@ -26,6 +26,7 @@ function Availability() {
 
   async function handleAdd() {
     try {
+
       const res = await fetch(`${API}/availability/`, {
         method: "POST",
         headers: {
@@ -40,24 +41,26 @@ function Availability() {
 
       const data = await res.json()
 
-      setMessage(data.message)
+      // SUCCESS CASE
+      if (data.id) {
 
-      if (data.message === "Availability added") {
+        setMessage("Availability added")
 
-        // instantly update UI
-        setAvailability([
-          ...availability,
-          {
-            id: Date.now(),
-            day_of_week: day,
-            start_time: start,
-            end_time: end
-          }
+        // add new availability to UI
+        setAvailability(prev => [
+          ...prev,
+          data
         ])
 
         setDay("")
         setStart("")
         setEnd("")
+
+      } else {
+
+        // error message from backend
+        setMessage(data.message)
+
       }
 
     } catch (err) {
@@ -67,12 +70,15 @@ function Availability() {
 
   async function handleDelete(id) {
     try {
+
       await fetch(`${API}/availability/${id}`, {
         method: "DELETE"
       })
 
-      // update UI immediately
-      setAvailability(availability.filter(a => a.id !== id))
+      // remove from UI
+      setAvailability(prev =>
+        prev.filter(a => a.id !== id)
+      )
 
     } catch (err) {
       console.error("Failed to delete availability")
