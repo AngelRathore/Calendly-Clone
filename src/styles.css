@@ -651,3 +651,14 @@ body{
 .meeting-card.past{
   opacity:0.7;
 }
+
+
+
+.error-message{
+  color:#f87171;
+  background:rgba(0,0,0,0.55);
+  padding:6px 12px;
+  border-radius:6px;
+  width:fit-content;
+  margin-top:10px;
+}
