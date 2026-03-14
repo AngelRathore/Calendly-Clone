@@ -35,7 +35,7 @@ export async function deleteEvent(id) {
 /* ---------------- SLOTS ---------------- */
 
 export async function getSlots(eventId) {
-  const res = await fetch(`${API}/slots?/event_id=${eventId}`)
+  const res = await fetch(`${API}/slots/?event_id=${eventId}`)
   return await res.json()
 }
 
